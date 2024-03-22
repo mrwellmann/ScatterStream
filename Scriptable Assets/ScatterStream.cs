@@ -49,13 +49,13 @@ namespace AshleySeric.ScatterStream
         public Dictionary<TileCoords, Tile_InstancedRendering> LoadedInstanceRenderingTiles = new Dictionary<TileCoords, Tile_InstancedRendering>();
         public HashSet<TileCoords> dirtyInstancedRenderingTiles = new HashSet<TileCoords>();
         public HashSet<TileCoords> tilesBeingStreamedIn = new HashSet<TileCoords>();
-        public NativeHashSet<TileCoords> loadedTileCoords;
-        public NativeHashSet<TileCoords> tileCoordsInRange;
+        public NativeParallelHashSet<TileCoords> loadedTileCoords;
+        public NativeParallelHashSet<TileCoords> tileCoordsInRange;
         /// <summary>
         /// [0]: Stream guid
         /// [1]: Tile coords
         /// </summary>
-        public NativeHashSet<TileCoords> attemptedLoadButDoNotExist;
+        public NativeParallelHashSet<TileCoords> attemptedLoadButDoNotExist;
 
         #endregion
 
@@ -134,9 +134,9 @@ namespace AshleySeric.ScatterStream
             if (!isInitialised)
             {
                 cacheFolderDirectPath = null; // Ensures the pathing gets recalculated.
-                loadedTileCoords = new NativeHashSet<TileCoords>(1024, Allocator.Persistent);
-                tileCoordsInRange = new NativeHashSet<TileCoords>(1024, Allocator.Persistent);
-                attemptedLoadButDoNotExist = new NativeHashSet<TileCoords>(1024, Allocator.Persistent);
+                loadedTileCoords = new NativeParallelHashSet<TileCoords>(1024, Allocator.Persistent);
+                tileCoordsInRange = new NativeParallelHashSet<TileCoords>(1024, Allocator.Persistent);
+                attemptedLoadButDoNotExist = new NativeParallelHashSet<TileCoords>(1024, Allocator.Persistent);
                 areInstancedRenderingSortedBuffersDirty = true;
                 localCameraPositionAtLastStream = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
                 isInitialised = true;

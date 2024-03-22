@@ -16,7 +16,7 @@ namespace AshleySeric.ScatterStream
         public float3 cameraPositionStreamSpace;
         public float2 cameraPositionStreamSpaceFlattened;
         public int2 nearestTileCoords;
-        public NativeHashSet<TileCoords>.ParallelWriter resultsWriter;
+        public NativeParallelHashSet<TileCoords>.ParallelWriter resultsWriter;
 
         public void Execute(int index)
         {

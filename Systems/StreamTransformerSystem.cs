@@ -11,7 +11,7 @@ namespace AshleySeric.ScatterStream
 {
     [UpdateInGroup(typeof(ScatterStreamSystemGroup))]
     [UpdateAfter(typeof(TileStreamer))]
-    public class StreamTransformerSystem : SystemBase
+    public partial class StreamTransformerSystem : SystemBase
     {
         private static NativeHashMap<int, float4x4> streamTransforms;
         private static NativeHashSet<int> dirtyStreamTransforms;
@@ -70,7 +70,7 @@ namespace AshleySeric.ScatterStream
             {
                 var buffer = new EntityCommandBuffer(Allocator.TempJob);
                 var bufferWriter = buffer.AsParallelWriter();
-                var itemDataFromEntity = GetComponentDataFromEntity<ScatterItemEntityData>(false);
+                var itemDataFromEntity = GetComponentLookup<ScatterItemEntityData>(false);
 
                 foreach (var streamId in dirtyStreamTransforms)
                 {

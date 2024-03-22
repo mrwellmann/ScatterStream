@@ -13,9 +13,9 @@ using UnityEngine.Profiling;
 
 namespace AshleySeric.ScatterStream
 {
-    [AlwaysUpdateSystem]
+    //[AlwaysUpdateSystem]
     [UpdateInGroup(typeof(ScatterStreamSystemGroup))]
-    public class Painter : SystemBase
+    public partial class Painter : SystemBase
     {
         public static bool allowPlacementProcessing = true;
         private const string PAINTING_LAYER_NAME = "Default";
@@ -176,7 +176,7 @@ namespace AshleySeric.ScatterStream
                     break;
                 case RenderingMode.Entities:
                     var matrix = float4x4.TRS(placementData.position, placementData.rotation, placementData.scale);
-                    var matrices = new NativeHashSet<float4x4>(1, Allocator.Persistent) { matrix };
+                    var matrices = new NativeParallelHashSet<float4x4>(1, Allocator.Persistent) { matrix };
                     var overlappingTiles = GetOrCreateOverlappingTiles(matrices, stream);
                     var buffer = new EntityCommandBuffer(Allocator.Persistent);
                     var presetIndex = placementData.presetIndex;
@@ -262,11 +262,11 @@ namespace AshleySeric.ScatterStream
                         UpdateTilesOverlappingBrushList(brushState.position, brushRadius, stream);
                         var tiles = tilesOverlappingBrush;
                         var commandBuffer = new EntityCommandBuffer(Allocator.TempJob);
-                        var entityBufferLookup = GetBufferFromEntity<ScatterItemEntityBuffer>();
-                        var instanceDataFromEntity = GetComponentDataFromEntity<ScatterItemEntityData>();
+                        var entityBufferLookup = GetBufferLookup<ScatterItemEntityBuffer>();
+                        var instanceDataFromEntity = GetComponentLookup<ScatterItemEntityData>();
                         var position = brushState.position;
                         var presetIndex = brushState.presetIndex;
-                        var transLookup = GetComponentDataFromEntity<Translation>();
+                        var transLookup = GetComponentLookup<Translation>();
 
                         foreach (var tileEntity in tiles)
                         {
@@ -323,7 +323,7 @@ namespace AshleySeric.ScatterStream
                     RenderBrushCamera(brushState, stream.brushConfig);
                 }
 
-                NativeHashSet<float4x4> matricesToPlace = await GetBrushPlacementMatrices(stream.brushConfig, brushState.diameter, stream.presets.Presets[brushState.presetIndex].scaleMultiplier, rotationOffset, brushState);
+                NativeParallelHashSet<float4x4> matricesToPlace = await GetBrushPlacementMatrices(stream.brushConfig, brushState.diameter, stream.presets.Presets[brushState.presetIndex].scaleMultiplier, rotationOffset, brushState);
                 // Capture variables for access in the job.
                 var scaleRange = stream.brushConfig.scaleRange;
                 var noiseScale = stream.brushConfig.noiseScale;
@@ -347,7 +347,7 @@ namespace AshleySeric.ScatterStream
                 switch (stream.renderingMode)
                 {
                     case RenderingMode.DrawMeshInstanced:
-                        var positionCount = matricesToPlace.Count();
+                        var positionCount = matricesToPlace.Count;
                         var matrices = matricesToPlace.ToNativeArray(Allocator.Persistent);
                         var changedTiles = new HashSet<TileCoords>();
                         var brushPixels = usingBrushCamera ? brushTargetTexture.GetPixels() : null;
@@ -408,7 +408,7 @@ namespace AshleySeric.ScatterStream
         /// Get all valid brush positions as per brush config/position.
         /// </summary>
         /// <returns>HashSet of world space placement positions.</returns>
-        private async Task<NativeHashSet<float4x4>> GetBrushPlacementMatrices(ScatterBrush brush, float diameter, float3 scaleMultiplier, quaternion rotationOffset, BrushPlacementData brushState, int maxHitsPerRay = 1)
+        private async Task<NativeParallelHashSet<float4x4>> GetBrushPlacementMatrices(ScatterBrush brush, float diameter, float3 scaleMultiplier, quaternion rotationOffset, BrushPlacementData brushState, int maxHitsPerRay = 1)
         {
             // Capture variables for access within the job.
             var localUp = new Quaternion(rotationOffset.value.x, rotationOffset.value.y, rotationOffset.value.z, rotationOffset.value.w) * new Vector3(0, 1, 0);
@@ -484,10 +484,10 @@ namespace AshleySeric.ScatterStream
             return result;
         }
 
-        private NativeHashMap<TileCoords, Entity> GetOrCreateOverlappingTiles(NativeHashSet<float4x4> positions, ScatterStream stream)
+        private NativeHashMap<TileCoords, Entity> GetOrCreateOverlappingTiles(NativeParallelHashSet<float4x4> positions, ScatterStream stream)
         {
             var buffer = new EntityCommandBuffer(Allocator.Persistent);
-            var tilesToMake = new NativeHashSet<TileCoords>(0, Allocator.Persistent);
+            var tilesToMake = new NativeParallelHashSet<TileCoords>(0, Allocator.Persistent);
             var allTilesByCoords = new NativeHashMap<TileCoords, Entity>(0, Allocator.Persistent);
             var streamId = stream.id;
 

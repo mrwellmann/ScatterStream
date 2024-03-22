@@ -16,9 +16,9 @@ using UnityEngine.Profiling;
 
 namespace AshleySeric.ScatterStream
 {
-    [AlwaysUpdateSystem]
+    //[AlwaysUpdateSystem]
     [UpdateInGroup(typeof(ScatterStreamSystemGroup))]
-    public class TileStreamer : SystemBase
+    public partial class TileStreamer : SystemBase
     {
         public const int TILE_FILE_FORMAT_VERSION = 2;
         /// <summary>
@@ -121,9 +121,9 @@ namespace AshleySeric.ScatterStream
             stream.contentModificationLockOwner = null;
         }
 
-        private async Task<NativeHashSet<TileCoords>> CollectTileCoordsInRange(float3 cameraPositionStreamSpace, float distance, ScatterStream stream)
+        private async Task<NativeParallelHashSet<TileCoords>> CollectTileCoordsInRange(float3 cameraPositionStreamSpace, float distance, ScatterStream stream)
         {
-            var results = new NativeHashSet<TileCoords>((int)math.ceil((distance * distance) / stream.tileWidth), Allocator.Persistent);
+            var results = new NativeParallelHashSet<TileCoords>((int)math.ceil((distance * distance) / stream.tileWidth), Allocator.Persistent);
             var indexLimit = (int)math.ceil(distance / stream.tileWidth);
             var cameraPosFlattened = new float2(cameraPositionStreamSpace.x, cameraPositionStreamSpace.z);
 
@@ -358,7 +358,7 @@ namespace AshleySeric.ScatterStream
             // Cleanup any failed attempt tiles that are now out of bounds.
             Job.WithCode(() =>
             {
-                var tilesToRemove = new NativeHashSet<TileCoords>(0, Allocator.TempJob);
+                var tilesToRemove = new NativeParallelHashSet<TileCoords>(0, Allocator.TempJob);
 
                 while (attemptedLoadEnumerator.MoveNext())
                 {
@@ -533,12 +533,12 @@ namespace AshleySeric.ScatterStream
             var fileName = stream.GetTileFilePath(tileCoords);
             var tileInstances = stream.LoadedInstanceRenderingTiles[tileCoords].instances;
             var genericTileInstances = new List<List<GenericInstancePlacementData>>();
-            
+
             // Convert instances into generic format for serialization.
             foreach (var preset in tileInstances)
             {
                 var list = new List<GenericInstancePlacementData>();
-                
+
                 foreach (var item in preset)
                 {
                     list.Add(new GenericInstancePlacementData
@@ -547,7 +547,7 @@ namespace AshleySeric.ScatterStream
                         colour = item.colour
                     });
                 }
-                
+
                 genericTileInstances.Add(list);
             }
 

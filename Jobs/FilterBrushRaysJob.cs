@@ -21,12 +21,12 @@ namespace AshleySeric.ScatterStream
         [ReadOnly] public float brushRadiusSqr;
         [ReadOnly] public int chunkSizePerItem;
         [ReadOnly] public NativeArray<RaycastHit> raycastHits;
-        [WriteOnly] public NativeHashSet<float4x4>.ParallelWriter matricesToPlaceWriter;
+        [WriteOnly] public NativeParallelHashSet<float4x4>.ParallelWriter matricesToPlaceWriter;
 
         /// <summary>
         /// Culls hits based on brush filters.  Also applies scale noise according to brush settings.
         /// </summary>
-        public static async Task<NativeHashSet<float4x4>> GetFilteredHits(
+        public static async Task<NativeParallelHashSet<float4x4>> GetFilteredHits(
             ScatterBrush brush,
             float3 localUp,
             float3 brushHitPos,
@@ -169,7 +169,7 @@ namespace AshleySeric.ScatterStream
                 #endregion
 
                 var nativeFilteredHits = new NativeArray<RaycastHit>(filteredHits, Allocator.TempJob);
-                var matricesToPlace = new NativeHashSet<float4x4>(hitCount, allocator);
+                var matricesToPlace = new NativeParallelHashSet<float4x4>(hitCount, allocator);
                 var filterJob = new FilterBrushRaysJob
                 {
                     localUp = localUp,
@@ -195,7 +195,7 @@ namespace AshleySeric.ScatterStream
             catch (System.Exception e)
             {
                 Debug.LogError(e);
-                return new NativeHashSet<float4x4>();
+                return new NativeParallelHashSet<float4x4>();
             }
         }
 

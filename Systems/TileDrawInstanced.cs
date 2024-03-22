@@ -10,10 +10,10 @@ using UnityEngine.Rendering;
 
 namespace AshleySeric.ScatterStream
 {
-    [AlwaysUpdateSystem]
+    //[AlwaysUpdateSystem]
     [UpdateInGroup(typeof(ScatterStreamSystemGroup))]
     [UpdateAfter(typeof(Painter))]
-    public class TileDrawInstanced : SystemBase
+    public partial class TileDrawInstanced : SystemBase
     {
         public const string TILE_DEBUG_MATERIAL_RESOURCES_PATH = "ScatterStream/TileDebug";
         public static bool drawDebugs = false;
