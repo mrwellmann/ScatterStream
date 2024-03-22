@@ -1,0 +1,20 @@
+{
+	"name": "com.ashleyseric.scatterstream",
+	"displayName": "Scatter Stream",
+	"version": "0.0.1",
+	"unity": "2022.3",
+	"description": "A runtime object scattering/vegetation authoring, streaming and rendering tool for Unity optimised for instanced rendering a very large number of placed items.",
+	"dependencies": {
+		"com.unity.render-pipelines.high-definition": "14.0.10",
+		"com.unity.entities.graphics": "1.0.16",
+		"com.unity.entities": "1.0.16"
+	},
+	"keywords": [
+		"scattering"
+	],
+	"author": {
+		"name": "ashleyseric",
+		"email": "contact@ashleyseric.com",
+		"url": "http://www.ashleyseric.com"
+	}
+}

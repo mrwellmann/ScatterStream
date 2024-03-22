@@ -4,6 +4,10 @@ A runtime object scattering/vegetation authoring, streaming and rendering tool f
 
 Scatter Stream works entirely independent of Unity's Terrain system although items can be placed on terrains if desired. 
 
+## Install
+
+Add https://github.com/Cysharp/UniTask
+
 
 ## Still in early development
 
