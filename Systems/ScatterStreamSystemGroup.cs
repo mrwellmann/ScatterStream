@@ -7,5 +7,5 @@ namespace AshleySeric.ScatterStream
 {
     [UnityEngine.ExecuteAlways]
     [UpdateBefore(typeof(TransformSystemGroup))]
-    public class ScatterStreamSystemGroup : ComponentSystemGroup { }
+    public partial class ScatterStreamSystemGroup : ComponentSystemGroup { }
 }

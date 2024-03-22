@@ -345,7 +345,7 @@ namespace AshleySeric.ScatterStream
                 switch (stream.renderingMode)
                 {
                     case RenderingMode.DrawMeshInstanced:
-                        var positionCount = matricesToPlace.Count;
+                        var positionCount = matricesToPlace.Count();
                         var matrices = matricesToPlace.ToNativeArray(Allocator.Persistent);
                         var changedTiles = new HashSet<TileCoords>();
                         var brushPixels = usingBrushCamera ? brushTargetTexture.GetPixels() : null;

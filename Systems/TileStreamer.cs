@@ -417,7 +417,7 @@ namespace AshleySeric.ScatterStream
                     {
                         var commandBuffer = new EntityCommandBuffer(Allocator.TempJob);
                         var commandBufferParrallelWriter = commandBuffer.AsParallelWriter();
-                        var tileItemEntityBuffer = GetBufferFromEntity<ScatterItemEntityBuffer>(true);
+                        var tileItemEntityBuffer = GetBufferLookup<ScatterItemEntityBuffer>(true);
                         var coordsInRange = stream.tileCoordsInRange;
                         var streamId = stream.id;
 
@@ -492,9 +492,9 @@ namespace AshleySeric.ScatterStream
                         {
                             // Esure this is still a valid dirty tile as we may
                             // have waited a few frames since the initial query.
-                            if (!tileEntity.Equals(Entity.Null) && filter.Matches(tileEntity))
+                            if (!tileEntity.Equals(Entity.Null) && filter.MatchesIgnoreFilter(tileEntity))
                             {
-                                var tile = GetComponent<Tile>(tileEntity);
+                                var tile = SystemAPI.GetComponent<Tile>(tileEntity);
 
                                 if (tile.StreamId == streamGuid)
                                 {
@@ -589,7 +589,7 @@ namespace AshleySeric.ScatterStream
                 File.Delete(fileName);
             }
 
-            var tileItemBuffer = GetBufferFromEntity<ScatterItemEntityBuffer>(true)[tileEntity];
+            var tileItemBuffer = GetBufferLookup<ScatterItemEntityBuffer>(true)[tileEntity];
 
             if (tileItemBuffer.Length > 0)
             {
@@ -684,10 +684,10 @@ namespace AshleySeric.ScatterStream
                                             int maxTileEncodingItemsPerFrame)
         {
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-            var translationFromEntity = GetComponentDataFromEntity<Translation>(true);
-            var rotationFromEntity = GetComponentDataFromEntity<Rotation>(true);
-            var scaleFromEntity = GetComponentDataFromEntity<NonUniformScale>(true);
-            var scatterItemData = GetComponentDataFromEntity<ScatterItemEntityData>(true);
+            var translationFromEntity = GetBufferLookup<Translation>(true);
+            var rotationFromEntity = GetBufferLookup<Rotation>(true);
+            var scaleFromEntity = GetBufferLookup<NonUniformScale>(true);
+            var scatterItemData = GetComponentLookup<ScatterItemEntityData>(true);
 
             // File format version.
             writer.Write(TILE_FILE_FORMAT_VERSION);
@@ -737,11 +737,11 @@ namespace AshleySeric.ScatterStream
                     stopwatch.Start();
 
                     // Refresh ECS getters as there may have been structural changes during the await.
-                    tileItemBuffer = GetBufferFromEntity<ScatterItemEntityBuffer>(true)[tileEntity];
-                    translationFromEntity = GetComponentDataFromEntity<Translation>(true);
-                    rotationFromEntity = GetComponentDataFromEntity<Rotation>(true);
-                    scaleFromEntity = GetComponentDataFromEntity<NonUniformScale>(true);
-                    scatterItemData = GetComponentDataFromEntity<ScatterItemEntityData>(true);
+                    tileItemBuffer = GetBufferLookup<ScatterItemEntityBuffer>(true)[tileEntity];
+                    translationFromEntity = GetComponentLookup<Translation>(true);
+                    rotationFromEntity = GetComponentLookup<Rotation>(true);
+                    scaleFromEntity = GetComponentLookup<NonUniformScale>(true);
+                    scatterItemData = GetComponentLookup<ScatterItemEntityData>(true);
                 }
             }
         }
