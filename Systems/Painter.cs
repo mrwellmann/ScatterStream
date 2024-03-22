@@ -22,7 +22,6 @@ namespace AshleySeric.ScatterStream
 
         private static Camera brushCamera;
         private static RenderTexture brushRenderTexture;
-        private EntityCommandBufferSystem sim;
         private Texture2D brushTargetTexture;
         private NativeList<Entity> tilesOverlappingBrush = new NativeList<Entity>(0, Allocator.Persistent);
         private static Queue<BrushPlacementData> pendingStrokes = new Queue<BrushPlacementData>();
@@ -40,7 +39,6 @@ namespace AshleySeric.ScatterStream
         protected override void OnCreate()
         {
             base.OnCreate();
-            sim = World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<EntityCommandBufferSystem>();
         }
 
         protected override void OnDestroy()
@@ -296,7 +294,7 @@ namespace AshleySeric.ScatterStream
                             items.Dispose();
                         }
 
-                        sim.AddJobHandleForProducer(Dependency);
+                        World.GetOrCreateSystemManaged<EndSimulationEntityCommandBufferSystem>().AddJobHandleForProducer(Dependency);
                         Dependency.Complete();
                         commandBuffer.Playback(EntityManager);
                         commandBuffer.Dispose();
@@ -387,7 +385,7 @@ namespace AshleySeric.ScatterStream
                             SpawnScatterItemECS(positionsToPlaceEnumerator.Current, overlappingTiles, selPresetIndex, entityPrefab, streamGuid, tileWidth, spawnItemsBuffer);
                         }
 
-                        sim.AddJobHandleForProducer(Dependency);
+                        World.GetOrCreateSystemManaged<EndSimulationEntityCommandBufferSystem>().AddJobHandleForProducer(Dependency);
                         Dependency.Complete();
                         overlappingTiles.Dispose();
                         spawnItemsBuffer.Playback(EntityManager);

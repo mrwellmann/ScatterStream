@@ -15,14 +15,12 @@ namespace AshleySeric.ScatterStream
     {
         private static NativeHashMap<int, float4x4> streamTransforms;
         private static NativeHashSet<int> dirtyStreamTransforms;
-        private EntityCommandBufferSystem sim;
 
         protected override void OnCreate()
         {
             base.OnCreate();
             streamTransforms = new NativeHashMap<int, float4x4>(ScatterStream.ActiveStreams.Count, Allocator.Persistent);
             dirtyStreamTransforms = new NativeHashSet<int>(ScatterStream.ActiveStreams.Count, Allocator.Persistent);
-            sim = World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<EntityCommandBufferSystem>();
         }
 
         protected override void OnDestroy()
@@ -99,7 +97,7 @@ namespace AshleySeric.ScatterStream
                             break;
                     }
 
-                    sim.AddJobHandleForProducer(Dependency);
+                    World.GetOrCreateSystemManaged<EndSimulationEntityCommandBufferSystem>().AddJobHandleForProducer(Dependency);
                     Dependency.Complete();
                 }
 
